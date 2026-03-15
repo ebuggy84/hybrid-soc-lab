@@ -164,6 +164,6 @@ This lab simulates a **real-world Hybrid SOC** by connecting on-premise infrastr
 
 - **LinkedIn:** [linkedin.com/in/emilioburgohy198](https://linkedin.com/in/emilioburgohy198)
 - **Email:** emilioburgohy@gmail.com
-- **GitHub:** [github.com/emilioburgohy](https://github.com/emilioburgohy)
+- **GitHub:** [github.com/ebuggy84](https://github.com/ebuggy84)
 
 > *US Army Veteran (9 years, 25L Communications) | Security+ | CySA+ (In Progress)*
