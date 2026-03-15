@@ -1,0 +1,59 @@
+// ============================================================
+// DETECTION: Suspicious Sudo Usage on Linux Hosts
+// MITRE ATT&CK: T1548.003 - Abuse Elevation Control: Sudo
+// Author: Emilio Burgohy
+// Environment: Hybrid SOC Home Lab
+// Log Source: Syslog via Azure Monitor Agent → Microsoft Sentinel
+// ============================================================
+//
+// DESCRIPTION:
+//   Detects sudo commands run by non-standard users, failed sudo
+//   attempts (potential privilege escalation probing), and sudo
+//   usage during off-hours. Particularly useful for catching
+//   lateral movement after initial compromise.
+//
+// RESPONSE: See /runbooks/unauthorized-access.md
+// ============================================================
+
+let authorizedSudoUsers = dynamic(["emilio", "admin"]);  // Update with your actual admin accounts
+let businessHoursStart = 7;   // 7 AM
+let businessHoursEnd = 20;    // 8 PM
+
+Syslog
+| where TimeGenerated > ago(24h)
+| where Facility == "auth"
+| where SyslogMessage has "sudo"
+| extend
+    SudoUser = extract(@"sudo:\s+(\w+)", 1, SyslogMessage),
+    SudoCommand = extract(@"COMMAND=(.+)$", 1, SyslogMessage),
+    IsFailed = SyslogMessage has_any ("authentication failure", "incorrect password attempts", "NOT in sudoers"),
+    HourOfDay = hourofday(TimeGenerated)
+| extend
+    IsAfterHours = HourOfDay < businessHoursStart or HourOfDay > businessHoursEnd,
+    IsUnauthorizedUser = not(SudoUser in (authorizedSudoUsers)),
+    IsSensitiveCommand = SudoCommand has_any ("/bin/bash", "/bin/sh", "passwd", "useradd", "chmod 777", "nc ", "ncat", "python", "perl")
+| extend
+    RiskScore = toint(IsFailed) * 30
+              + toint(IsAfterHours) * 20
+              + toint(IsUnauthorizedUser) * 40
+              + toint(IsSensitiveCommand) * 50
+| where RiskScore > 0
+| extend
+    AlertSeverity = case(
+        RiskScore >= 80, "High",
+        RiskScore >= 40, "Medium",
+        "Informational"
+    )
+| project
+    TimeGenerated,
+    Computer,
+    SudoUser,
+    SudoCommand,
+    IsFailed,
+    IsAfterHours,
+    IsUnauthorizedUser,
+    IsSensitiveCommand,
+    RiskScore,
+    AlertSeverity,
+    MITRE = "T1548.003 - Sudo Abuse"
+| sort by RiskScore desc

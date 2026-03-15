@@ -1,0 +1,57 @@
+// ============================================================
+// DETECTION: SSH/Linux Brute Force Attempt
+// MITRE ATT&CK: T1110 - Brute Force
+// Author: Emilio Burgohy
+// Environment: Hybrid SOC Home Lab
+// Log Source: Syslog via Azure Monitor Agent → Microsoft Sentinel
+// ============================================================
+//
+// DESCRIPTION:
+//   Detects when a single source IP generates 5 or more failed
+//   authentication attempts against a Linux host within 5 minutes.
+//   Tuned to reduce false positives from known internal IPs.
+//
+// RESPONSE: See /runbooks/brute-force-response.md
+// ============================================================
+
+let threshold = 5;
+let timeWindow = 5m;
+let knownInternalIPs = dynamic(["10.0.0.0/8", "192.168.0.0/16"]);
+
+Syslog
+| where TimeGenerated > ago(1h)
+| where Facility == "auth"
+| where SyslogMessage has_any ("Failed password", "Invalid user", "authentication failure")
+| extend SourceIP = extract(@"from (\d+\.\d+\.\d+\.\d+)", 1, SyslogMessage)
+| extend TargetUser = extract(@"for (?:invalid user )?(\w+)", 1, SyslogMessage)
+| where isnotempty(SourceIP)
+// Uncomment below to exclude internal IPs from alerting
+// | where not(ipv4_is_in_range(SourceIP, "10.0.0.0/8"))
+// | where not(ipv4_is_in_range(SourceIP, "192.168.0.0/16"))
+| summarize
+    FailedAttempts = count(),
+    TargetAccounts = make_set(TargetUser),
+    FirstSeen = min(TimeGenerated),
+    LastSeen = max(TimeGenerated)
+    by SourceIP, Computer, bin(TimeGenerated, timeWindow)
+| where FailedAttempts >= threshold
+| extend
+    AlertSeverity = case(
+        FailedAttempts >= 50, "High",
+        FailedAttempts >= 20, "Medium",
+        "Low"
+    ),
+    MITRE_Technique = "T1110 - Brute Force",
+    RecommendedAction = "Check /runbooks/brute-force-response.md"
+| project
+    TimeGenerated,
+    SourceIP,
+    Computer,
+    FailedAttempts,
+    TargetAccounts,
+    AlertSeverity,
+    FirstSeen,
+    LastSeen,
+    MITRE_Technique,
+    RecommendedAction
+| sort by FailedAttempts desc
