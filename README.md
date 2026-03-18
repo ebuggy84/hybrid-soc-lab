@@ -1,30 +1,24 @@
-# 🛡️ Hybrid SOC Home Lab — Detection Engineering & Incident Response
+🛡️ Hybrid SOC Home Lab — Detection Engineering & Incident Response
+Built by Emilio Burgohy | Cybersecurity Analyst | USF MS Cybercrime & Digital Forensics
+Show Image
+Show Image
+Show Image
+Show Image
+Show Image
 
-**Built by Emilio Burgohy | Cybersecurity Analyst | USF MS Cybercrime & Digital Forensics**
+🎯 Mission
+This lab simulates a real-world Hybrid SOC by connecting on-premise infrastructure to cloud-native security tooling. The goal is to practice the full security operations lifecycle:
 
-[![Security+](https://img.shields.io/badge/CompTIA-Security%2B-red)](https://www.comptia.org/)
-[![CySA+](https://img.shields.io/badge/CompTIA-CySA%2B-red)](https://www.comptia.org/)
-[![Microsoft Sentinel](https://img.shields.io/badge/Microsoft-Sentinel-blue)](https://azure.microsoft.com/en-us/products/microsoft-sentinel)
-[![Wazuh](https://img.shields.io/badge/SIEM-Wazuh-brightgreen)](https://wazuh.com/)
+Detection Engineering — Writing KQL rules that catch real attacker behavior
+Incident Response — Triaging, investigating, and documenting security events
+Threat Simulation — Attacking my own environment to validate detections
+Cloud + On-Prem Integration — Bridging local hardware to Microsoft Sentinel via secure tunnel
 
----
 
-## 🎯 Mission
+This is not a theoretical lab. Every detection rule here was written in response to something observed in this environment.
 
-This lab simulates a **real-world Hybrid SOC** by connecting on-premise infrastructure to cloud-native security tooling. The goal is to practice the full security operations lifecycle:
 
-- **Detection Engineering** — Writing rules that catch real attacker behavior
-- **Incident Response** — Triaging, investigating, and documenting security events
-- **Threat Simulation** — Attacking my own environment to validate detections
-- **Cloud + On-Prem Integration** — Bridging local hardware to Microsoft Sentinel via secure tunnel
-
-> This is not a theoretical lab. Every detection rule here was written in response to something observed in this environment.
-
----
-
-## 🏗️ Infrastructure Overview
-
-```
+🏗️ Infrastructure Overview
 ┌─────────────────────────────────────────────────────────────────┐
 │                        HOME NETWORK                             │
 │                     (Unifi Ecosystem)                           │
@@ -56,15 +50,14 @@ This lab simulates a **real-world Hybrid SOC** by connecting on-premise infrastr
                     └────┬────┘
                          │
                ┌─────────▼──────────┐
-               │  AZURE CLOUD        │
+               │    AZURE CLOUD      │
                │                    │
                │  [SOC-Gateway-VM]  │
-               │   Log Collector    │
-               │   AMA Agent        │
+               │   Ubuntu 24.04     │
+               │   AMA + rsyslog    │
                │        ↓           │
                │ [Microsoft Sentinel]│
-               │   KQL Queries      │
-               │   Analytics Rules  │
+               │   5 Analytics Rules│
                │   Incident Mgmt    │
                └────────────────────┘
                          │
@@ -72,48 +65,47 @@ This lab simulates a **real-world Hybrid SOC** by connecting on-premise infrastr
                │  Security Onion    │  ← Bare metal (GMKtec 32GB)
                │  Network IDS/NSM   │
                └────────────────────┘
-```
 
----
+🖥️ Hardware Inventory
+DeviceRoleRAMStorageStatusMinisforum MSA2 (Node 1)Proxmox / Wazuh SIEM128GB4TB NVMe🟢 OnlineMinisforum MS01 (Node 2)Proxmox / OpenVAS96GB2TB NVMe🟢 OnlineMinisforum MS01 (Node 3)Proxmox / DC01 + Victim VM96GB2TB NVMe🟢 OnlineGMKtec Mini PCSecurity Onion (bare metal)32GB1TB HDD🟢 OnlineZimaboard 832Kali Linux Attack Platform--🟢 Online
+Network: Unifi UDM Pro Max | USW Pro 48 PoE | 8-Port Aggregation | 24-Port Switch
 
-## 🖥️ Hardware Inventory
+🔐 WireGuard VPN Tunnel
+Encrypted tunnel connecting all Proxmox nodes to Azure gateway for secure log forwarding — zero open inbound ports.
+NodeWireGuard IPStatusSOC-Gateway-VM (Azure)10.0.0.1🟢 OnlineMS01-Node210.0.0.2🟢 OnlineMS01-Node310.0.0.3🟢 OnlineMSA2-Node110.0.0.5🟢 Online
 
-| Device | Role | RAM | Storage | Status |
-|--------|------|-----|---------|--------|
-| Minisforum MSA2 (Node 1) | Proxmox / Wazuh SIEM | 128GB | 4TB NVMe | 🟢 Online |
-| Minisforum MS01 (Node 2) | Proxmox / OpenVAS | 96GB | 2TB NVMe | 🟢 Online |
-| Minisforum MS01 (Node 3) | Proxmox / DC01 + Victim VM | 96GB | 2TB NVMe | 🟢 Online |
-| GMKtec Mini PC | Security Onion (bare metal) | 32GB | 1TB HDD | 🟢 Online |
-| Zimaboard 832 (x3) | Edge devices / Available | - | - | 🟡 Standby |
-| Zimaboard 1664 (x2) | Edge devices / Available | - | - | 🟡 Standby |
-| Kali Linux (Zimaboard) | Attack simulation platform | - | - | 🟢 Online |
+🔧 Security Stack
+ToolCategoryPurposeMicrosoft SentinelCloud SIEMCentral log analysis, KQL detections, incident managementWazuhOn-Prem SIEM/XDRHost-based IDS, FIM, MITRE ATT&CK mappingSecurity OnionNSM / IDSNetwork traffic analysis, Zeek logs, Suricata alertsOpenVASVulnerability ScannerContinuous vulnerability assessment of lab assetsWireGuardSecure TunnelEncrypted on-prem to Azure log forwardingAzure Monitor AgentLog ForwardingSyslog → Sentinel pipeline via SOC-Gateway VMProxmox VEHypervisor3-node cluster managing all VMsUnifiNetwork InfrastructureVLAN segmentation, firewall rules, traffic mirroringKali LinuxThreat SimulationAuthorized attack simulation to validate detections
 
-**Network:** Unifi UDM Pro Max | USW Pro 48 PoE | 8-Port Aggregation | 24-Port Switch
+📊 Microsoft Sentinel Analytics Rules
+5 active detection rules running 24/7:
+RuleSeverityTypeTacticSSH Brute Force AttemptMediumScheduled (Custom)Credential Access, Initial AccessSuccessful Login After Multiple FailuresHighScheduled (Custom)Initial AccessNew Local User Account CreatedLowScheduled (Custom)Persistence, Privilege EscalationPrivileged Command Execution (Sudo) - ProxmoxMediumScheduled (Custom)Privilege EscalationAdvanced Multistage Attack DetectionHighFusion (Built-in)Multiple
 
----
+⚔️ Threat Simulations
+✅ SSH Brute Force Attack (Completed — March 2026)
+Attacker: Kali Linux (10.0.30.12)
+Target: MS01-Node3 (10.0.30.13)
+Tool: Hydra
+Result: Sentinel detected attack and auto-generated Medium severity incident
+Attack command:
+bashhydra -l root -P /usr/share/wordlists/rockyou.txt -t 10 -s 22 10.0.30.13 ssh
+Detection chain:
+Kali launches attack
+    → Failed logins logged by Node3 auth facility
+    → rsyslog forwards via WireGuard tunnel to SOC-Gateway
+    → Azure Monitor Agent ingests into Sentinel
+    → KQL rule fires (5+ failures in 5 min threshold)
+    → Incident auto-generated: "SSH Brute Force Attempt" (Medium)
+    → Investigation graph maps attacker IP → target host
+Evidence:
+ScreenshotDescriptionscreenshots/01-sentinel-brute-force-syslog-detection.pngLive Syslog showing failed SSH attempts from Kaliscreenshots/02-sentinel-analytics-rules-active.pngAll 5 analytics rules enabledscreenshots/03-wireguard-tunnel-all-nodes-connected.pngAll 4 nodes connected via WireGuardscreenshots/04-sentinel-all-nodes-reporting.pngAll nodes sending logs to Sentinelscreenshots/05-sentinel-ssh-brute-force-incident.pngAuto-generated incident in Sentinelscreenshots/06-sentinel-incident-details.pngIncident details panelscreenshots/07-sentinel-incident-investigation-graph.pngAttack investigation graphscreenshots/08-sentinel-incident-timeline.pngIncident timelinescreenshots/09-sentinel-incident-entities.pngEntities extracted from incident
 
-## 🔧 Security Stack
-
-| Tool | Category | Purpose |
-|------|----------|---------|
-| Microsoft Sentinel | Cloud SIEM | Central log analysis, KQL detections, incident management |
-| Wazuh | On-Prem SIEM/XDR | Host-based IDS, FIM, MITRE ATT&CK mapping |
-| Security Onion | NSM / IDS | Network traffic analysis, Zeek logs, Suricata alerts |
-| OpenVAS | Vulnerability Scanner | Continuous vulnerability assessment of lab assets |
-| WireGuard | Secure Tunnel | Encrypted on-prem to Azure log forwarding |
-| Azure Monitor Agent | Log Forwarding | Syslog → Sentinel pipeline via SOC-Gateway VM |
-| Proxmox VE | Hypervisor | 3-node cluster managing all VMs |
-| Unifi | Network Infrastructure | VLAN segmentation, firewall rules, traffic mirroring |
-| Kali Linux | Threat Simulation | Authorized attack simulation to validate detections |
-
----
-
-## 📁 Repository Structure
-
-```
+📁 Repository Structure
 /hybrid-soc-homelab
 │
 ├── README.md                    ← You are here
+│
+├── /screenshots                 ← Evidence from detections and simulations
 │
 ├── /infrastructure              ← Lab setup guides & configs (sanitized)
 │   ├── proxmox-cluster-setup.md
@@ -124,9 +116,10 @@ This lab simulates a **real-world Hybrid SOC** by connecting on-premise infrastr
 ├── /detections                  ← KQL & Wazuh detection rules
 │   ├── README.md
 │   ├── kql/
-│   │   ├── brute-force-detection.kql
-│   │   ├── sudo-abuse-detection.kql
-│   │   └── after-hours-login.kql
+│   │   ├── ssh-brute-force.kql
+│   │   ├── successful-login-after-failures.kql
+│   │   ├── new-user-created.kql
+│   │   └── sudo-abuse-detection.kql
 │   └── wazuh/
 │       └── custom-rules.xml
 │
@@ -143,27 +136,33 @@ This lab simulates a **real-world Hybrid SOC** by connecting on-premise infrastr
 └── /scripts                     ← Automation and utility scripts
     ├── README.md
     └── log-health-check.sh
-```
 
----
+🚀 Key Achievements
 
-## 🚀 Key Achievements
+✅ Built 3-node Proxmox cluster (320GB RAM) running enterprise security tooling
+✅ Established encrypted WireGuard tunnel — zero open inbound ports to internet
+✅ All 4 nodes reporting logs to Microsoft Sentinel in real time
+✅ Fixed AppArmor blocking rsyslog — persistent systemd service solution
+✅ Made sysctl + iptables settings persistent across reboots
+✅ Deployed 5 custom KQL analytics rules with auto-incident generation
+✅ Ran first threat simulation — SSH brute force detected, incident auto-created in Sentinel
+✅ Investigated incident using Sentinel investigation graph, timeline, and entities
+✅ Deployed Wazuh SIEM with MITRE ATT&CK framework mapping
+✅ Active Directory lab (DC01 + Windows 11 victim) for realistic attack simulation
+🔄 Security Onion integration with Sentinel (planned)
+🔄 OpenVAS vulnerability scan findings documentation (planned)
+🔄 Additional threat simulations: lateral movement, privilege escalation (planned)
+🔄 Automated incident response playbooks (planned)
 
-- ✅ Built 3-node Proxmox cluster (320GB RAM) running enterprise security tooling
-- ✅ Established encrypted WireGuard tunnel — zero open ports to internet
-- ✅ Onboarded logs to Microsoft Sentinel; filtered 6,000+ noise events to optimize budget
-- ✅ Deployed Wazuh SIEM with MITRE ATT&CK framework mapping
-- ✅ Running continuous OpenVAS vulnerability scans across lab environment
-- ✅ Active Directory lab (DC01 + Windows 11 victim) for realistic attack simulation
-- 🔄 Building KQL Analytics Rules for automated incident generation
-- 🔄 Threat simulation exercises (brute force, privilege escalation) planned
 
----
+🎓 Certifications & Education
+CredentialStatusCompTIA Security+✅ CertifiedISC2 CC✅ CertifiedCompTIA CySA+🎯 March 2026BS Cybersecurity (SPC)✅ December 2025MS Cybercrime & Digital Forensics (USF)🎓 In Progress — GPA 3.7US Army (9 years, 25L Signal/Communications)✅ Veteran
 
-## 📬 Connect
+📬 Connect
 
-- **LinkedIn:** [linkedin.com/in/emilioburgohy198](https://linkedin.com/in/emilioburgohy198)
-- **Email:** emilioburgohy@gmail.com
-- **GitHub:** [github.com/ebuggy84](https://github.com/ebuggy84)
+LinkedIn: linkedin.com/in/emilioburgohy198
+Email: emilioburgohy@gmail.com
+GitHub: github.com/ebuggy84
 
-> *US Army Veteran (9 years, 25L Communications) | Security+ | CySA+ (In Progress)*
+
+Building real SOC skills — one detection at a time.
