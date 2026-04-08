@@ -7,7 +7,14 @@ Format: `\[Date] — What happened and why it matters`
 \---
 
 ## March 2026
-
+### 2026-03-15 (Evening)
+**WireGuard Tunnel Restored — Logs Flowing to Sentinel**
+- Diagnosed SOC-Gateway-VM missing 10.0.0.1 IP on wg0 interface after Azure deallocation
+- Restored IP with: sudo ip addr add 10.0.0.1/24 dev wg0
+- Verified tunnel connectivity — 0% packet loss to Node 2 (10.0.0.2) and Node 3 (10.0.0.3)
+- Confirmed logs flowing from MS01-Node2 and MS01-Node3 into Microsoft Sentinel
+- Node 1 (MSA2-Node1/Wazuh) pending — same fix needed
+- 2 of 3 nodes fully reporting to Sentinel ✅
 ### 2026-03-14
 
 **Microsoft Sentinel Onboarding**
