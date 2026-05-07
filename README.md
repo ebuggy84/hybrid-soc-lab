@@ -141,7 +141,7 @@ Encrypted tunnel connecting all Proxmox nodes to Azure gateway for secure log fo
 
 Key Findings: Unauthenticated dashboard access, version disclosure via 
 state.js, plaintext HTTP admin interface, UPnP exposure.  
-📄 [Full Report →](findings/ASUS-AXE16000-Factory-Reset-Audit/)
+📄 [Full Report →](findings/Audit_ASUS_AXE16000_Factory_Reset.pdf)
 
 ### ✅ SSH Brute Force Attack (Completed — March 2026)
 
