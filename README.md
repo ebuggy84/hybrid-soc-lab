@@ -134,6 +134,14 @@ Encrypted tunnel connecting all Proxmox nodes to Azure gateway for secure log fo
 ---
 
 ## ⚔️ Threat Simulations
+✅ ASUS GT-AXE16000 Router Security Audit (Completed — May 2026)
+**Target:** ASUS GT-AXE16000 (Factory Reset State)  
+**Tool:** Nmap, searchsploit, curl, Metasploit Framework  
+**Result:** 6 findings including CVE-2024-3080 (CVSS 9.8 Critical) confirmed
+
+Key Findings: Unauthenticated dashboard access, version disclosure via 
+state.js, plaintext HTTP admin interface, UPnP exposure.  
+📄 [Full Report →](findings/ASUS-AXE16000-Factory-Reset-Audit/)
 
 ### ✅ SSH Brute Force Attack (Completed — March 2026)
 
@@ -256,9 +264,10 @@ Kali launches attack
 |-----------|--------|
 | CompTIA Security+ | ✅ Certified |
 | ISC2 CC | ✅ Certified |
-| CompTIA CySA+ | 🎯 March 2026 |
+| CompTIA CySA+ | CySA+ ✅ Certified |
 | BS Cybersecurity (SPC) | ✅ December 2025 |
-| MS Cybercrime & Digital Forensics (USF) | 🎓 In Progress — GPA 3.7 |
+| CompTIA PenTest+ | 🔄 In Progress
+| MS Cybercrime & Digital Forensics (USF) | 🎓 In Progress — GPA 3.8 |
 | US Army (9 years, 25L Signal/Communications) | ✅ Veteran |
 
 ---
