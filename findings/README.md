@@ -2,7 +2,6 @@
 
 This folder contains documented security findings and audit reports 
 produced by Burgohy Security Solutions (BSS).
-
 Each engagement is self-contained with a full report and supporting 
 artifacts.
 
@@ -20,6 +19,21 @@ dashboard access, version disclosure via state.js, and plaintext HTTP
 admin interface.  
 
 📄 [Full Report →](Audit_ASUS_AXE16000_Factory_Reset.pdf)
+
+---
+
+### 🔴 BSS Purple Team SOC — Port Scan Detection
+**Date:** 2026-05-12  
+**Severity:** Medium  
+**Tools:** Nmap, Microsoft Sentinel, KQL, Azure Arc  
+
+**Summary:** Simulated network reconnaissance attack from Kali Linux 
+against three domain-joined Windows 11 workstations. Microsoft Sentinel 
+detected the attack in real time via Event ID 5156, auto-generated a 
+Medium severity incident, and rendered the full attack path in the 
+investigation graph.  
+
+📄 [Full Report →](BSS-Purple-Team-SOC-Report.pdf)
 
 ---
 
