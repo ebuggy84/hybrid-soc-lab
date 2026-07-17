@@ -169,31 +169,31 @@ Kali launches attack
 **Evidence:**
 
 **01 — Live Syslog: Failed SSH attempts flooding in from Kali**
-![Syslog Detection](01-sentinel-brute-force-syslog-detection.png)
+![Syslog Detection](screenshots/01-sentinel-brute-force-syslog-detection.png)
 
 **02 — All 5 Analytics Rules Active in Sentinel**
-![Analytics Rules](02-sentinel-analytics-rules-active.png)
+![Analytics Rules](screenshots/02-sentinel-analytics-rules-active.png)
 
 **03 — WireGuard Tunnel: All 4 Nodes Connected**
-![WireGuard Tunnel](03-wireguard-tunnel-all-nodes-connected.png)
+![WireGuard Tunnel](screenshots/03-wireguard-tunnel-all-nodes-connected.png)
 
 **04 — All Nodes Reporting Logs to Sentinel**
-![All Nodes Reporting](04-sentinel-all-nodes-reporting.png)
+![All Nodes Reporting](screenshots/04-sentinel-all-nodes-reporting.png)
 
 **05 — Incident Auto-Generated: SSH Brute Force Attempt (Medium)**
-![Incident Created](05-sentinel-ssh-brute-force-incident.png)
+![Incident Created](screenshots/05-sentinel-ssh-brute-force-incident.png)
 
 **06 — Incident Details Panel**
-![Incident Details](06-sentinel-incident-details.png)
+![Incident Details](screenshots/06-sentinel-incident-details.png)
 
 **07 — Attack Investigation Graph: Kali IP → Target Host**
-![Investigation Graph](07-sentinel-incident-investigation-graph.png)
+![Investigation Graph](screenshots/07-sentinel-incident-investigation-graph.png)
 
 **08 — Incident Timeline**
-![Incident Timeline](08-sentinel-incident-timeline.png)
+![Incident Timeline](screenshots/08-sentinel-incident-timeline.png)
 
 **09 — Entities Extracted from Incident**
-![Incident Entities](09-sentinel-incident-entities.png)
+![Incident Entities](screenshots/09-sentinel-incident-entities.png)
 
 ---
 
